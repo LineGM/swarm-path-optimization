@@ -1,0 +1,8 @@
+.idea/
+.vs/
+.vscode/
+build/
+_deps_src/
+**/.DS_Store
+docs/html/
+docs/Doxyfile
