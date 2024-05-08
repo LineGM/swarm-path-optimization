@@ -5,12 +5,21 @@ if(BUILD_TESTING)
   add_subdirectory(test)
 endif()
 
-add_custom_target(
+if (WIN32 AND MINGW)
+  add_custom_target(
     run-exe
-    COMMAND swarm_optimization_exe
+    COMMAND ./swarm_optimization.exe
     VERBATIM
-)
-add_dependencies(run-exe swarm_optimization_exe)
+  )
+  add_dependencies(run-exe swarm_optimization_exe)
+else()
+  add_custom_target(
+    run-exe
+    COMMAND ./swarm_optimization
+    VERBATIM
+  )
+  add_dependencies(run-exe swarm_optimization_exe)
+endif()
 
 option(BUILD_DOCS "Build documentation using Doxygen" OFF)
 if(BUILD_DOCS)

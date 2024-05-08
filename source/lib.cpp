@@ -1,6 +1,5 @@
 #include "lib.hpp"
 
-library::library()
-    : name {"swarm_optimization"}
+library::library() : name{"swarm_optimization"}
 {
 }
