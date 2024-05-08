@@ -103,7 +103,7 @@ if(WIN32 AND MINGW)
 	# Building and executing (post-build) bash-script
 	configure_file(${CMAKE_SOURCE_DIR}/Copy_DLLs.sh ${CMAKE_CURRENT_BINARY_DIR}/Copy_DLLs.sh @ONLY)
 	add_custom_command(
-    TARGET cmake-init-gui-qt_exe
+    TARGET swarm_optimization_exe
     POST_BUILD COMMAND bash "${CMAKE_CURRENT_BINARY_DIR}/Copy_DLLs.sh"
   )
 endif()

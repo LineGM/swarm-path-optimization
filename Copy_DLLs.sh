@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXE="@CMAKE_CURRENT_BINARY_DIR@/cmake-init-cpp-gui.exe"
+EXE="@CMAKE_CURRENT_BINARY_DIR@/swarm_optimization.exe"
 
 search_paths=("/usr/@CMAKE_COMPILER_PREFIX@/bin"
              #"/usr/lib/gcc/@CMAKE_COMPILER_PREFIX@/13.1.0/"
