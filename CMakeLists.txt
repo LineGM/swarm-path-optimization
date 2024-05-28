@@ -30,13 +30,12 @@ find_package(
 # ---- Declare library ----
 add_library(
     swarm_optimization_lib OBJECT
-    source/lib.cpp
+    source/PSO.hpp
 )
 
 target_include_directories(
     swarm_optimization_lib ${warning_guard}
-    PUBLIC
-    "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
+    PUBLIC "\$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
 )
 
 target_compile_features(swarm_optimization_lib PUBLIC cxx_std_20)
@@ -62,12 +61,22 @@ endif()
 
 
 # ---- Declare executable ----
-add_executable(swarm_optimization_exe ${EXE_TYPE} source/main.cpp)
+add_executable(
+	swarm_optimization_exe ${EXE_TYPE}
+	source/main.cpp
+)
 add_executable(swarm_optimization::exe ALIAS swarm_optimization_exe)
 
-set_property(TARGET swarm_optimization_exe PROPERTY OUTPUT_NAME swarm_optimization)
+set_property(
+	TARGET swarm_optimization_exe
+	PROPERTY
+	OUTPUT_NAME swarm_optimization
+)
 
-target_compile_features(swarm_optimization_exe PRIVATE cxx_std_20)
+target_compile_features(
+	swarm_optimization_exe
+	PRIVATE cxx_std_20
+)
 
 target_link_libraries(
   swarm_optimization_exe 
@@ -90,6 +99,13 @@ if(PROJECT_IS_TOP_LEVEL)
 		WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
 	)
 endif()
+
+# ---- Копирование ресурсов времени выполнения ----
+add_custom_target(
+	optimization_results
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/source/plot_csv.py ${CMAKE_CURRENT_BINARY_DIR}/plot_csv.py
+	COMMAND python3 ${CMAKE_CURRENT_BINARY_DIR}/plot_csv.py
+)
 
 # ---- Find and copy DLLs ----
 if(WIN32 AND MINGW)
