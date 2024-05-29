@@ -88,6 +88,7 @@ plt.title('Data from the CSV File: global, local, and particle positions')
 
 plt.xlabel('x')
 plt.ylabel('y')
+plt.savefig("optimization_results.pdf")
 plt.show()
 
 #===========================================================================================#

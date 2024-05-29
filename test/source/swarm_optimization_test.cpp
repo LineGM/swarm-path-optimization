@@ -7,6 +7,8 @@ auto main() -> int
 	using namespace boost::ut;
 
 	"Trivial"_test = [] {
-		expect(1 == 1) << "1" << "!=" << "1";
+		expect(1 == 1) << "1"
+					   << "!="
+					   << "1";
 	};
 }

@@ -20,7 +20,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-# ---- Looking for Qt
+# ---- Looking for Qt ----
 find_package(
 	Qt5
 	COMPONENTS Core Gui Widgets
@@ -30,7 +30,8 @@ find_package(
 # ---- Declare library ----
 add_library(
     swarm_optimization_lib OBJECT
-    source/PSO.hpp
+    source/PSO.cpp
+	source/PSOUtils.cpp
 )
 
 target_include_directories(
