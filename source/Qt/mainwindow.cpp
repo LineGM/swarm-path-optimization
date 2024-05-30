@@ -26,6 +26,21 @@ mainWindow::mainWindow(QMainWindow *parent) : QMainWindow(parent)
 	setIcons(mw);
 }
 
+void mainWindow::on_Exit_triggered()
+{
+	QApplication::quit();
+}
+
+void mainWindow::on_aboutProgram_triggered()
+{
+	QMessageBox::information(this, "О программе", "Автор программы: Гудков Глеб Олегович\nГод создания: 2024\nДанная программа создана в рамках выпускной квалификационной работы на степень бакалавра по специальности и профилю:\n\"Информатика и вычислительная техника\"\n\"Искусственный интеллект и системы автоматизированного проектирования\"");
+}
+
+void mainWindow::on_aboutQt_triggered()
+{
+	QApplication::aboutQt();
+}
+
 mainWindow::~mainWindow()
 {
 	delete mw;

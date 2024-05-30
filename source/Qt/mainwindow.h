@@ -21,7 +21,9 @@ public:
     ~mainWindow();
 
 private slots:
-
+    void on_Exit_triggered();
+    void on_aboutProgram_triggered();
+    void on_aboutQt_triggered();
 
 private:
     Ui::mainWindow *mw;

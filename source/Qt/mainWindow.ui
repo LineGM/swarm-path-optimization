@@ -71,6 +71,23 @@
    <addaction name="menu_4"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>LeftToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="obstaclesMapOpen"/>
+   <addaction name="obstaclesMapGenerate"/>
+   <addaction name="setParams"/>
+   <addaction name="startOptimization"/>
+   <addaction name="showResults"/>
+   <addaction name="saveResults"/>
+  </widget>
   <action name="obstaclesMapOpen">
    <property name="text">
     <string>Открыть карту препятствий</string>
