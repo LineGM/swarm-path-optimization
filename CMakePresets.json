@@ -32,20 +32,6 @@
       }
     },
     {
-      "name": "cppcheck-unix64",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr;--platform=unix64"
-      }
-    },
-    {
-      "name": "cppcheck-win64",
-      "hidden": true,
-      "cacheVariables": {
-        "CMAKE_CXX_CPPCHECK": "cppcheck;--inline-suppr;--platform=win64"
-      }
-    },
-    {
       "name": "clang-tidy",
       "hidden": true,
       "cacheVariables": {

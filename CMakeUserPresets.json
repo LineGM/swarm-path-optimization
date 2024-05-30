@@ -9,7 +9,7 @@
     {
       "name": "dev-linux",
       "binaryDir": "${sourceDir}/build/dev-linux",
-      "inherits": ["dev-mode", "ci-linux", "cppcheck-unix64", "clang-tidy"],
+      "inherits": ["dev-mode", "ci-linux", "clang-tidy"],
       "cacheVariables": {
         "BUILD_DOCS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
@@ -24,7 +24,7 @@
     {
       "name": "dev-linux-gnu",
       "binaryDir": "${sourceDir}/build/dev-linux-gnu",
-      "inherits": ["dev-mode", "ci-linux", "cppcheck-unix64", "clang-tidy"],
+      "inherits": ["dev-mode", "ci-linux", "clang-tidy"],
       "cacheVariables": {
         "BUILD_DOCS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
@@ -39,7 +39,7 @@
     {
       "name": "dev-win64",
       "binaryDir": "${sourceDir}/build/dev-win64",
-      "inherits": ["dev-mode", "ci-win64", "cppcheck-win64", "clang-tidy"],
+      "inherits": ["dev-mode", "ci-win64", "clang-tidy"],
       "cacheVariables": {
         "BUILD_DOCS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
@@ -53,7 +53,7 @@
     {
       "name": "dev-linux-to-win64",
       "binaryDir": "${sourceDir}/build/dev-linux-to-win64",
-      "inherits": ["dev-mode", "ci-win64", "cppcheck-win64", "clang-tidy"],
+      "inherits": ["dev-mode", "ci-win64", "clang-tidy"],
       "cacheVariables": {
         "BUILD_DOCS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",
@@ -71,7 +71,7 @@
     {
       "name": "dev-win64-to-linux",
       "binaryDir": "${sourceDir}/build/dev-win64-to-linux",
-      "inherits": ["dev-mode", "ci-cygwin", "cppcheck-unix64", "clang-tidy"],
+      "inherits": ["dev-mode", "ci-cygwin", "clang-tidy"],
       "cacheVariables": {
         "BUILD_DOCS": "ON",
         "CMAKE_BUILD_TYPE": "Debug",

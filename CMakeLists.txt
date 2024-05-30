@@ -13,6 +13,7 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
+# ---- Find includes in build dirs ----
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # ---- Auto MOC, UIC, RCC for Qt ----
@@ -27,7 +28,7 @@ find_package(
 	REQUIRED
 )
 
-# ---- Declare library ----
+# ---- Declare PSO library ----
 add_library(
     swarm_optimization_lib OBJECT
     source/PSO.cpp
@@ -41,31 +42,35 @@ target_include_directories(
 
 target_compile_features(swarm_optimization_lib PUBLIC cxx_std_20)
 
-target_link_libraries(
-	swarm_optimization_lib
-	PUBLIC Qt5::Core
-	PUBLIC Qt5::Gui
-	PUBLIC Qt5::Widgets
+# ---- Declare Qt GUI library ----
+add_library(
+	qt_gui_lib OBJECT
+	source/Qt/mainwindow.cpp
 )
 
-#[===[
-  The executable file, when compiled under Windows, will be created with the WinMain() entry point, not just main().
-  This makes it a GUI executable file, not a console application.
-  They will also allow you to remove the opening console when launching the executable file from the GUI.
-]===]
+target_include_directories(
+	qt_gui_lib ${warning_guard}
+	PUBLIC "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
+)
 
-if(WIN32 AND MINGW)
-	set(EXE_TYPE WIN32)
-else ()
-	set(EXE_TYPE "")
-endif()
+target_compile_features(
+	qt_gui_lib
+	PUBLIC cxx_std_20
+)
 
+target_link_libraries(
+	qt_gui_lib
+	PUBLIC swarm_optimization_lib
+	PUBLIC Qt5::Core	# linking Qt5::Core
+	PUBLIC Qt5::Gui		# linking Qt5::Gui
+	PUBLIC Qt5::Widgets	# linking Qt5::Widgets
+)
 
-# ---- Declare executable ----
-add_executable(
-	swarm_optimization_exe ${EXE_TYPE}
+# ---- Declare console executable ----
+add_executable(swarm_optimization_exe
 	source/main.cpp
 )
+
 add_executable(swarm_optimization::exe ALIAS swarm_optimization_exe)
 
 set_property(
@@ -82,6 +87,48 @@ target_compile_features(
 target_link_libraries(
   swarm_optimization_exe 
   PRIVATE swarm_optimization_lib
+)
+
+#[===[
+  The executable file, when compiled under Windows, will be created with the WinMain() entry point, not just main().
+  This makes it a GUI executable file, not a console application.
+  They will also allow you to remove the opening console when launching the executable file from the GUI.
+]===]
+
+if(WIN32 AND MINGW)
+	set(EXE_TYPE WIN32)
+else ()
+	set(EXE_TYPE "")
+endif()
+
+
+# ---- Declare Qt executable ----
+add_executable(swarm_optimization_qt_exe ${EXE_TYPE}
+	source/Qt/main.cpp
+)
+
+add_executable(swarm_optimization::qt_exe ALIAS swarm_optimization_qt_exe)
+
+set_property(
+	TARGET swarm_optimization_qt_exe
+	PROPERTY 
+	OUTPUT_NAME swarm_optimization_gui
+)
+
+target_compile_features(
+	swarm_optimization_qt_exe
+	PRIVATE cxx_std_20
+)
+
+target_compile_options(
+	swarm_optimization_qt_exe
+	PRIVATE -O
+)
+
+target_link_libraries(
+	swarm_optimization_qt_exe
+	PRIVATE swarm_optimization_lib
+	PRIVATE qt_gui_lib
 )
 
 # ---- Install rules ----
@@ -101,12 +148,13 @@ if(PROJECT_IS_TOP_LEVEL)
 	)
 endif()
 
-# ---- Копирование ресурсов времени выполнения ----
+# ---- Optimization results ----
 add_custom_target(
 	optimization_results
 	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/source/plot_csv.py ${CMAKE_CURRENT_BINARY_DIR}/plot_csv.py
 	COMMAND python3 ${CMAKE_CURRENT_BINARY_DIR}/plot_csv.py
 )
+add_dependencies(optimization_results run-exe)
 
 # ---- Find and copy DLLs ----
 if(WIN32 AND MINGW)
