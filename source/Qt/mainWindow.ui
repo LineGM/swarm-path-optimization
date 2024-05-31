@@ -25,7 +25,24 @@
   <property name="windowTitle">
    <string>Оптимизация траектории движения роя БЛС</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QLabel" name="showResultsLabel">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>961</width>
+      <height>651</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignmentFlag::AlignCenter</set>
+    </property>
+   </widget>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
@@ -129,6 +146,9 @@
    </property>
   </action>
   <action name="showResults">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Показать графические результаты оптимизации</string>
    </property>
@@ -154,7 +174,7 @@
   </action>
   <action name="aboutQt">
    <property name="text">
-    <string>О библиотеке Qt</string>
+    <string>О библиотеке &amp;Qt</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>

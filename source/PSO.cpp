@@ -23,8 +23,6 @@
 
 namespace PSOLibrary
 {
-Params OptimizationParams = Params();
-
 double *generate_random(int swarm_size, double lower_bound, double upper_bound, int i)
 {
 	srand(static_cast<unsigned int>(time(NULL)));
@@ -45,6 +43,7 @@ double *generate_random(int swarm_size, double lower_bound, double upper_bound, 
 	}
 	return a_random_array;
 }
+
 namespace FitnessFunctions
 {
 double shortfit(Coord input, Coord goal)
@@ -62,7 +61,7 @@ double smoothfit(Coord input, Coord goal, Coord gbest)
 	return smooth;
 }
 
-double fitness(Coord input, Coord gbest)
+double fitness(Coord input, Coord gbest, Params OptimizationParams)
 {
 	Coord target; // Goal to reach
 	target.x = OptimizationParams.DESTINATION_X;
@@ -90,8 +89,9 @@ Coord new_particle(Coord input1, Coord input0, double center_x, double center_y,
 	double slope = (input1.y - input0.y) / (input1.x - input0.x);
 	double invslope = -1 * (1 / slope);
 	// double obs = obs_distance(input1, input0, center_x, center_y, radius);
-	double rn = generate_random(1, 0, 1, seed)[0];
-	double safedistance = radius + (rn * thresh);
+	double *rn = generate_random(1, 0, 1, seed);
+	double safedistance = radius + (rn[0] * thresh);
+	delete[] (rn);
 
 	double newX1 = (safedistance / sqrt(1 + pow(invslope, 2.0))) + center_x;
 	double newY1 = ((safedistance * invslope) / sqrt(1 + pow(invslope, 2.0))) + center_y;
@@ -179,6 +179,56 @@ bool obstacle_avoidance(int num_obstacle, Coord &input1, Coord input0, std::vect
 
 	return final_val_init;
 }
+
+void generate_obstacles(std::vector<double> &center_x, std::vector<double> &center_y, int seed, Params OptimizationParams)
+{
+	for (int i = OptimizationParams.NUM_OBSTACLE; i--;)
+	{
+	init:
+		double *rnd_x = generate_random(1, -1, 1, seed++);
+		double *rnd_y = generate_random(1, -1, 1, seed++);
+		int c_x = static_cast<int>((OptimizationParams.POS_MULTIPLE - 200) * (rnd_x[0]));
+		int c_y = static_cast<int>((OptimizationParams.POS_MULTIPLE - 200) * (rnd_y[0]));
+		bool stinobs = Obstacles::inCircle(OptimizationParams.START_X, OptimizationParams.START_Y, c_x, c_y, OptimizationParams.R);
+		bool tarinobs = Obstacles::inCircle(OptimizationParams.DESTINATION_X, OptimizationParams.DESTINATION_Y, c_x, c_y, OptimizationParams.R);
+		delete[] (rnd_x);
+		delete[] (rnd_y);
+		if (!stinobs && !tarinobs)
+		{
+			std::cout << c_x << ", " << c_y << std::endl;
+			center_x.push_back(c_x);
+			center_y.push_back(c_y);
+		}
+		else
+		{
+			std::cout << "start or target in obstacle..... Replanning" << std::endl;
+			goto init;
+		}
+	}
+}
+
+void readObstaclesMap(std::filesystem::path pathToMap, std::vector<double> &center_x, std::vector<double> &center_y, Params OptimizationParams)
+{
+	std::ifstream mapfile(pathToMap);
+	if (mapfile.is_open())
+	{
+		int obs_number = 0;
+		mapfile >> obs_number;
+		int obs_radius = 0;
+		mapfile >> obs_radius;
+
+		OptimizationParams.NUM_OBSTACLE = obs_number;
+		OptimizationParams.R = obs_radius;
+
+		double x, y;
+		while (mapfile >> x >> y)
+		{
+			center_x.push_back(x);
+			center_y.push_back(y);
+		}
+	}
+	mapfile.close();
+}
 } // namespace Obstacles
 
 namespace Algorithm
@@ -190,15 +240,69 @@ void epochDisplay(int iter_ctr, double global_best_fit, Coord global_best_pos)
 	std::cout << "New Global Best Position: (" << global_best_pos.x << "," << global_best_pos.y << ")" << std::endl;
 }
 
-void particleSwarmOptimization()
+void readParams(std::filesystem::path pathToParamsFile, Params &OptimizationParams)
 {
-	Coord target; // Goal to reach
-	target.x = OptimizationParams.DESTINATION_X;
-	target.y = OptimizationParams.DESTINATION_Y;
-	Coord start;
-	start.x = OptimizationParams.START_X;
-	start.y = OptimizationParams.START_Y;
+	std::ifstream paramfile(pathToParamsFile);
+	if (paramfile.is_open())
+	{
+		std::string name;
+		double value;
 
+		paramfile >> name >> value;
+		OptimizationParams.SWARM_SIZE = static_cast<int>(value);
+
+		paramfile >> name >> value;
+		OptimizationParams.NO_OF_ITERS = static_cast<int>(value);
+
+		paramfile >> name >> value;
+		OptimizationParams.WMIN = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.WMAX = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.C1 = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.C2 = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.START_X = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.START_Y = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.DESTINATION_X = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.DESTINATION_Y = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.LOWER_BOUNDARY = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.UPPER_BOUNDARY = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.NUM_OBSTACLE = static_cast<int>(value);
+
+		paramfile >> name >> value;
+		OptimizationParams.R = value;
+
+		paramfile >> name >> value;
+		OptimizationParams.TARGET_TOLERANCE = value;
+
+		OptimizationParams.V_MAX = (OptimizationParams.UPPER_BOUNDARY - OptimizationParams.LOWER_BOUNDARY) / 10;
+		OptimizationParams.POS_MULTIPLE = (OptimizationParams.UPPER_BOUNDARY - OptimizationParams.LOWER_BOUNDARY) / 2;
+		OptimizationParams.VEL_MULTIPLE = (OptimizationParams.UPPER_BOUNDARY - OptimizationParams.LOWER_BOUNDARY) / 20;
+		OptimizationParams.LOCAL_CONV_TOLERANCE = (OptimizationParams.NO_OF_ITERS / 20);
+	}
+	paramfile.close();
+}
+
+void particleSwarmOptimization(const Coord &start, const Coord &target, std::vector<double> &center_x, std::vector<double> &center_y, Params OptimizationParams)
+{
 	// Variables Initialization
 	//  Random Numbers used for updating position and velocity of particles
 	//  Positions // Velocities
@@ -255,37 +359,13 @@ void particleSwarmOptimization()
 	std::vector<std::vector<double>> local_pos_y;
 	local_pos_y.resize(static_cast<size_t>(rows), std::vector<double>(static_cast<size_t>(cols), initial_value));
 
-	global_best_fit = FitnessFunctions::fitness(global_best_pos, global_pos[0]);
+	global_best_fit = FitnessFunctions::fitness(global_best_pos, global_pos[0], OptimizationParams);
 
 	// Initialize obstacle parameters (Obstacles at random positions)
 	// ==================================================================================//
 	// bool incircle[NUM_OBSTACLE];
 	// double center_x[num_obstacle] = {-600, -300, 550, 600, 250};
 	// double center_y[num_obstacle] = {-100, 500, 500, -200, -1000};
-	std::vector<double> center_x(static_cast<size_t>(OptimizationParams.NUM_OBSTACLE));
-	std::vector<double> center_y(static_cast<size_t>(OptimizationParams.NUM_OBSTACLE));
-	for (int i = OptimizationParams.NUM_OBSTACLE; i--;)
-	{
-	init:
-		double *rnd_x = generate_random(1, -1, 1, seed++);
-		double *rnd_y = generate_random(1, -1, 1, seed++);
-		int c_x = static_cast<int>((OptimizationParams.POS_MULTIPLE - 200) * (rnd_x[0]));
-		int c_y = static_cast<int>((OptimizationParams.POS_MULTIPLE - 200) * (rnd_y[0]));
-		bool stinobs = Obstacles::inCircle(start.x, start.y, c_x, c_y, OptimizationParams.R);
-		bool tarinobs = Obstacles::inCircle(target.x, target.y, c_x, c_y, OptimizationParams.R);
-		delete[] (rnd_x);
-		delete[] (rnd_y);
-		if (!stinobs && !tarinobs)
-		{
-			center_x[static_cast<size_t>(i)] = c_x;
-			center_y[static_cast<size_t>(i)] = c_y;
-		}
-		else
-		{
-			std::cout << "start or target in obstacle..... Replanning" << std::endl;
-			goto init;
-		}
-	}
 	// ==================================================================================//
 
 	// First Iteration. Initialize swarm with Random Position and Velocity vectors for each particle.
@@ -326,7 +406,7 @@ void particleSwarmOptimization()
 		particle_states[static_cast<size_t>(i)].vely = OptimizationParams.VEL_MULTIPLE * (States[static_cast<size_t>(i)].y);
 
 		// Representing fitness function as the distance between the particles and local best
-		particle_fitness[static_cast<size_t>(i)] = FitnessFunctions::fitness(particle_states[static_cast<size_t>(i)], global_pos[0]);
+		particle_fitness[static_cast<size_t>(i)] = FitnessFunctions::fitness(particle_states[static_cast<size_t>(i)], global_pos[0], OptimizationParams);
 		local_best_pos[static_cast<size_t>(i)].x = particle_states[static_cast<size_t>(i)].x;
 		local_best_pos[static_cast<size_t>(i)].y = particle_states[static_cast<size_t>(i)].y;
 		local_best_fit[static_cast<size_t>(i)] = particle_fitness[static_cast<size_t>(i)];
@@ -415,20 +495,20 @@ void particleSwarmOptimization()
 		for (int i = OptimizationParams.SWARM_SIZE; i--;)
 		{
 			// Set Particle Fitness
-			particle_fitness[static_cast<size_t>(i)] = FitnessFunctions::fitness(particle_states[static_cast<size_t>(i)], global_pos[static_cast<size_t>(iter_ctr - 1)]);
+			particle_fitness[static_cast<size_t>(i)] = FitnessFunctions::fitness(particle_states[static_cast<size_t>(i)], global_pos[static_cast<size_t>(iter_ctr - 1)], OptimizationParams);
 
 			// Updating local/particle best position
 			if (particle_fitness[static_cast<size_t>(i)] > local_best_fit[static_cast<size_t>(i)])
 			{
 				local_best_pos[static_cast<size_t>(i)].x = particle_states[static_cast<size_t>(i)].x;
 				local_best_pos[static_cast<size_t>(i)].y = particle_states[static_cast<size_t>(i)].y;
-				local_best_fit[static_cast<size_t>(i)] = FitnessFunctions::fitness(local_best_pos[static_cast<size_t>(i)], global_pos[static_cast<size_t>(iter_ctr - 1)]);
+				local_best_fit[static_cast<size_t>(i)] = FitnessFunctions::fitness(local_best_pos[static_cast<size_t>(i)], global_pos[static_cast<size_t>(iter_ctr - 1)], OptimizationParams);
 				// Updating global best position
 				if (local_best_fit[static_cast<size_t>(i)] > global_best_fit)
 				{
 					global_best_pos.x = local_best_pos[static_cast<size_t>(i)].x;
 					global_best_pos.y = local_best_pos[static_cast<size_t>(i)].y;
-					global_best_fit = FitnessFunctions::fitness(global_best_pos, global_pos[static_cast<size_t>(iter_ctr - 1)]);
+					global_best_fit = FitnessFunctions::fitness(global_best_pos, global_pos[static_cast<size_t>(iter_ctr - 1)], OptimizationParams);
 
 					global_best_pos.velx = particle_states[static_cast<size_t>(i)].velx;
 					global_best_pos.vely = particle_states[static_cast<size_t>(i)].vely;
@@ -466,7 +546,7 @@ void particleSwarmOptimization()
 					Coord gbest;
 					gbest.x = global_best_pos.x + global_best_pos.velx;
 					gbest.y = global_best_pos.y + global_best_pos.vely;
-					double gfit = FitnessFunctions::fitness(gbest, global_pos[static_cast<size_t>(iter_ctr - 1)]);
+					double gfit = FitnessFunctions::fitness(gbest, global_pos[static_cast<size_t>(iter_ctr - 1)], OptimizationParams);
 					global_best_pos = gbest;
 					global_best_fit = gfit;
 

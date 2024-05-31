@@ -6,6 +6,7 @@
 */
 
 #include "PSO.hpp"
+#include "Params.hpp"
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
@@ -38,6 +39,29 @@ int main()
 	std::srand(static_cast<unsigned int>(std::time(0)));
 	clock_t startTime = clock();
 	std::cout << "Initiating Optimization ..." << std::endl;
-	PSOLibrary::Algorithm::particleSwarmOptimization();
+
+	Params OptimizationParams = Params();
+
+	Coord target = Coord();
+	target.x = OptimizationParams.DESTINATION_X;
+	target.y = OptimizationParams.DESTINATION_Y;
+	Coord start = Coord();
+	start.x = OptimizationParams.START_X;
+	start.y = OptimizationParams.START_Y;
+
+	std::vector<double> center_x;
+	std::vector<double> center_y;
+	int seed = 123;
+	PSOLibrary::Obstacles::generate_obstacles(center_x, center_y, seed, OptimizationParams);
+	// PSOLibrary::Obstacles::readObstaclesMap("/home/linegm/Documents/Obstacle.map", center_x, center_y, OptimizationParams);
+
+	std::cout << "Obstacles: " << std::endl;
+	for (auto i = 0; i < OptimizationParams.NUM_OBSTACLE; i++)
+	{
+		std::cout << i+1 << ": {" << center_x[static_cast<size_t>(i)] << ", " << center_y[static_cast<size_t>(i)] << "}" << std::endl;
+	}
+
+	PSOLibrary::Algorithm::particleSwarmOptimization(start, target, center_x, center_y, OptimizationParams);
+
 	std::cout << "Optimization Completed in " << static_cast<float>(startTime);
 }

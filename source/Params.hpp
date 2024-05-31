@@ -16,7 +16,7 @@
 struct Params
 {
 	//! Number of particles in Swarm
-	const int SWARM_SIZE = 200;
+	int SWARM_SIZE = 100;
 	//! Number of Iterations
 	int NO_OF_ITERS = 500;
 	//! Min Inertial Weight
@@ -29,33 +29,33 @@ struct Params
 	double C2 = 0.60;
 
 	//! Start X-Coordinate
-	const double START_X = 1000.0;
+	double START_X = 1000.0;
 	//! Start Y-Coordinate
-	const double START_Y = 1000.0;
+	double START_Y = 1000.0;
 	//! Destination X-Coordinate
-	const double DESTINATION_X = -500.0;
+	double DESTINATION_X = -500.0;
 	//! Destination Y-Coordinate
-	const double DESTINATION_Y = -1000.0;
+	double DESTINATION_Y = -1000.0;
 
 	//! Search Space Lower bound
-	const double LOWER_BOUNDARY = -1500.0;
+	double LOWER_BOUNDARY = -1500.0;
 	//! Search Space Upper bound
-	const double UPPER_BOUNDARY = 1500.0;
+	double UPPER_BOUNDARY = 1500.0;
 
 	//! Max Particle Velocity
-	const double V_MAX = (UPPER_BOUNDARY - LOWER_BOUNDARY) / 10;
+	double V_MAX = (UPPER_BOUNDARY - LOWER_BOUNDARY) / 10;
 	//! Position Multiplier
-	const double POS_MULTIPLE = (UPPER_BOUNDARY - LOWER_BOUNDARY) / 2;
+	double POS_MULTIPLE = (UPPER_BOUNDARY - LOWER_BOUNDARY) / 2;
 	//! Velocity Multiplier
-	const double VEL_MULTIPLE = (UPPER_BOUNDARY - LOWER_BOUNDARY) / 20;
+	double VEL_MULTIPLE = (UPPER_BOUNDARY - LOWER_BOUNDARY) / 20;
 
 	//! Number of obstacles
-	const int NUM_OBSTACLE = 10;
+	int NUM_OBSTACLE = 10;
 	//! Obstacles radius
-	const double R = 200.0;
+	double R = 200.0;
 
 	//! Tolerance for convergence
-	const double TARGET_TOLERANCE = 150.0;
+	double TARGET_TOLERANCE = 150.0;
 	//! Tolerance for local minima convergence
-	const double LOCAL_CONV_TOLERANCE = (NO_OF_ITERS / 20);
+	double LOCAL_CONV_TOLERANCE = (NO_OF_ITERS / 20);
 };

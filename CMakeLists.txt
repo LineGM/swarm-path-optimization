@@ -156,6 +156,12 @@ add_custom_target(
 )
 add_dependencies(optimization_results run-exe)
 
+add_custom_command(
+	TARGET swarm_optimization_qt_exe
+	POST_BUILD
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_SOURCE_DIR}/source/plot_csv.py ${CMAKE_CURRENT_BINARY_DIR}/plot_csv.py
+)
+
 # ---- Find and copy DLLs ----
 if(WIN32 AND MINGW)
 	# Path to Qt-plugins

@@ -8,7 +8,9 @@
 */
 
 #include "Coord.hpp"
+#include "Params.hpp"
 #include <vector>
+#include <filesystem>
 
 namespace PSOLibrary
 {
@@ -54,13 +56,14 @@ double smoothfit(Coord input, Coord goal, Coord gbest);
 /*!
 	@author Gleb Gudkov
 	@date 17.02.2024
-	@fn double fitness(Coord input, Coord gbest)
+	@fn double fitness(Coord input, Coord gbest, Params OptimizationParams)
 	Overall fitness function
 	@param input
 	@param gbest
+	@param OptimizationParams
 	@return calculated value of the fitness function
 */
-double fitness(Coord input, Coord gbest);
+double fitness(Coord input, Coord gbest, Params OptimizationParams);
 
 /*!
 	@author Gleb Gudkov
@@ -126,6 +129,30 @@ bool inCircle(double x, double y, double center_x, double center_y, double r);
 */
 // bool obstacle_avoidance(int num_obstacle, Coord &input1, Coord input0, double center_x[], double center_y[], double r, double thresh, int seed, double lower_boundary, double upper_boundary)
 bool obstacle_avoidance(int num_obstacle, Coord &input1, Coord input0, std::vector<double> center_x, std::vector<double> center_y, double r, double thresh, int seed);
+
+/*!
+	@author Gleb Gudkov
+	@date 17.02.2024
+	@fn void generate_obstacles(std::vector<double> &center_x, std::vector<double> &center_y, int seed, Params OptimizationParams)
+	Generate random positions for obstacles
+	@param center_x
+	@param center_y
+	@param seed
+	@param OptimizationParams
+*/
+void generate_obstacles(std::vector<double> &center_x, std::vector<double> &center_y, int seed, Params OptimizationParams);
+
+/*!
+	@author Gleb Gudkov
+	@date 17.02.2024
+	@fn void readObstaclesMap(std::filesystem::path pathToMap, std::vector<double> &center_x, std::vector<double> &center_y, Params OptimizationParams)
+	Read positions of the obstacles from map
+	@param center_x
+	@param center_y
+	@param seed
+	@param OptimizationParams
+*/
+void readObstaclesMap(std::filesystem::path pathToMap, std::vector<double> &center_x, std::vector<double> &center_y, Params OptimizationParams);
 } // namespace Obstacles
 
 namespace Algorithm
@@ -144,9 +171,19 @@ void epochDisplay(int iter_ctr, double global_best_fit, Coord global_best_pos);
 /*!
 	@author Gleb Gudkov
 	@date 17.02.2024
-	@fn void particleSwarmOptimization()
+	@fn void readParams(std::filesystem::path pathToParamsFile, Params &OptimizationParams)
+	Read params from .prm file
+	@param pathToParamsFile
+	@param OptimizationParams
+*/
+void readParams(std::filesystem::path pathToParamsFile, Params &OptimizationParams);
+
+/*!
+	@author Gleb Gudkov
+	@date 17.02.2024
+	@fn void particleSwarmOptimization(const Coord &start, const Coord &target, std::vector<double> &center_x, std::vector<double> &center_y, Params OptimizationParams)
 	The main function implementing the particle swarm algorithm
 */
-void particleSwarmOptimization();
+void particleSwarmOptimization(const Coord &start, const Coord &target, std::vector<double> &center_x, std::vector<double> &center_y, Params OptimizationParams);
 } // namespace Algorithm
 } // namespace PSOLibrary
